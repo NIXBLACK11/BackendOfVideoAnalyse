@@ -1,7 +1,6 @@
 {
     "name": "FeedbackLoopBackend",
     "version": "1.0.0",
-    "description": "Login function",
     "main": "index.js",
     "engines": {
       "node": "14.x"
