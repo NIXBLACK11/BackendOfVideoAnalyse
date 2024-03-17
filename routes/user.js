@@ -229,6 +229,12 @@ router.post('/:username/video', userMiddleware, uploadVideoMiddleware, async (re
         videoPath: "../uploads/"+req.fileName
     });
 
+    if(!findVideo) {
+        res.status(400).json({
+            message: "Bad Request"
+        });
+    }
+
     const genre = findVideo.videoGenre;
 
     const response = await axios.get(`http://127.0.0.1:5000/get_genre?path=${path}&genre=${genre}`);
