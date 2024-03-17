@@ -6,6 +6,7 @@ const router = express.Router();
 
 const { userMiddleware } = require("../middlewares/userMiddleware");
 const { uploadVideoMiddleware } = require("../middlewares/uploadVideoMiddleware");
+const { checkSubscriptionLimit } = require("../middlewares/subscriptionLimit");
 
 const { User } = require("../db/user");
 const { Video } = require("../db/video");
@@ -22,8 +23,8 @@ router.get('/', async(req, res) => {
         const filteredUsers = users.map((user) => {
             return {
                 userName: user.userName,
-                userEmail: user.userEmail,
-                userVideos: user.userVideos
+                userEmail: user.userEmail
+                // userVideos: user.userVideos
             };
         });
         res.status(200).json({
@@ -72,7 +73,9 @@ router.post('/signup', async(req, res) => {
         const createdUser = await User.create({
             userName: parsedPayload.data.userName,
             userEmail: parsedPayload.data.userEmail,
-            userPassword: parsedPayload.data.userPassword
+            userPassword: parsedPayload.data.userPassword,
+            userSubscription: "free",
+            userRequestCount: 0
         })
         const _id = createdUser._id;
         token = jwt.sign({
@@ -162,7 +165,7 @@ router.get('/:username', async(req, res) => {
 });
 
 //route to add metaData for video
-router.post('/:username/videoData', userMiddleware, async(req, res) => {
+router.post('/:username/videoData', userMiddleware, checkSubscriptionLimit, async(req, res) => {
     const payload = req.body;
     const parsedPayload = uploadVideo.safeParse(payload);
 
