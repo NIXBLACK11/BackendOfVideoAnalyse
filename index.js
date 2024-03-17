@@ -6,10 +6,12 @@ require('dotenv').config();
 const app = express();
 
 const userRoute = require("./routes/user");
+const limiter = require("./middlewares/rateLimit");
 
 const PORT = process.env.PORT;
 
 //Middlewares
+app.use(limiter);
 app.use(cors());
 app.use(bodyParser.json());
 app.use("/user", userRoute);
